@@ -1,22 +1,21 @@
 import { createStore } from 'redux';
-import { createAction } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
 const addToDo = createAction("ADD");
 const deleteToDo = createAction("DELETE");
 console.log(addToDo(), deleteToDo());
 
-const reducer = (state = [], action) => {
-  switch (action.type) {
-    case addToDo.type:
-      console.log(action);
-      return [{ text: action.payload, id: Date.now() }, ...state];
-    case deleteToDo.type:
-      console.log(action);
-      return state.filter(toDo => toDo.id !== action.payload);
-    default:
-      return state;
-  }
-};
+// https://redux-toolkit.js.org/api/createreducer
+// state argument를 mutate하거나 new state를 리턴해야 합니다
+const reducer = createReducer([], {
+  // state를 mutate하게 되면 아무것도 리턴하지 않음
+  [addToDo]: (state, action) => {
+    state.push({ text: action.payload, id: Date.now() });
+  },
+  // 뭔가를 리턴할 때는 꼭 새로운 state
+  [deleteToDo]: (state, action) =>
+    state.filter(toDo => toDo.id !== action.payload)
+});
 
 const store = createStore(reducer);
 
